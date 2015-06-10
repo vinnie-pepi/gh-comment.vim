@@ -2,13 +2,9 @@ if !exists('g:git_commit_url')
     let g:git_commit_url = 'https://github.com/Factual/work4/commit/'
 endif
 
-if !exists('g:git_bin')
-    let g:git_bin = 'git'
-endif
-
-if !exists('g:git_no_map_default') || !g:git_no_map_default
-    nnoremap <Leader>gc :GitComment<Enter>
-endif
+" if !exists('g:ghc_no_map_default') || !g:ghc_no_map_default
+"     nnoremap <Leader>gc :GitComment<Enter>
+" endif
 
 function! GetSha(blame_output)
   return a:blame_output[0:6]
@@ -36,10 +32,12 @@ function! s:SystemGit(args)
     " workardound for MacVim, on which shell does not inherit environment
     " variables
     lcd %:p:h
+    let cmd = 'git'
     if has('mac') && &shell =~ 'sh$'
-        return system('EDITOR="" '. g:git_bin . ' ' . a:args)
+        return system('EDITOR="" '. cmd . ' ' . a:args)
     else
-        return system(g:git_bin . ' ' . a:args)
+        return system(cmd . ' ' . a:args)
     endif
 endfunction
 command!	GitComment	call GitComment()
+command   Gc          GitComment
