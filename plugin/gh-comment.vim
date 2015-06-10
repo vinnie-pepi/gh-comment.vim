@@ -2,10 +2,17 @@ function! GetSha(blame_output)
   return a:blame_output[0:6]
 endfunction
 
-function! GetCommitUrl(sha)
-  let l = split(s:SystemGit('config --get remote.origin.url'), ':')
-  let repo = l[1][0:-6] " removes the .git and newline
-  return 'https://github.com/' . repo .'/commit/' . a:sha
+function! GetCommitUrl(sha, filehash, lineno)
+  let l       = split(s:SystemGit('config --get remote.origin.url'), ':')
+  let repo    = l[1][0:-6] " removes the .git and newline
+  let mode    = '/?diff=unified#'
+  let baseuri = 'https://github.com/' . repo .'/commit/'
+  return baseuri . a:sha . mode . 'R' . a:lineno
+endfunction
+
+function! GetFileHash(cur_file)
+  let fh = s:SystemGit('hash-object ' . a:cur_file)
+  return substitute(fh, '\n', '', '')
 endfunction
 
 function! GitComment()
@@ -13,8 +20,9 @@ function! GitComment()
   let cur_file   = expand('%:p')
   let git_output = 'blame -L ' . cur_line . ',' . cur_line . ' ' . cur_file
   let blame_output = s:SystemGit(git_output)
+  let filehash = GetFileHash(cur_file)
   let sha = GetSha(blame_output)
-  let url = GetCommitUrl(sha)
+  let url = GetCommitUrl(sha, filehash, cur_line)
   if has('mac') && &shell =~ 'sh$'
     return system('open ' . url)
   else
@@ -32,4 +40,4 @@ function! s:SystemGit(args)
     endif
 endfunction
 command!	GitComment	call GitComment()
-command	Gc	GitComment
+command!	Gc	GitComment
