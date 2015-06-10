@@ -1,11 +1,3 @@
-if !exists('g:git_commit_url')
-    let g:git_commit_url = 'https://github.com/Factual/work4/commit/'
-endif
-
-" if !exists('g:ghc_no_map_default') || !g:ghc_no_map_default
-"     nnoremap <Leader>gc :GitComment<Enter>
-" endif
-
 function! GetSha(blame_output)
   return a:blame_output[0:6]
 endfunction
@@ -40,4 +32,4 @@ function! s:SystemGit(args)
     endif
 endfunction
 command!	GitComment	call GitComment()
-command   Gc          GitComment
+command	Gc	GitComment
